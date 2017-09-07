@@ -1,0 +1,69 @@
+<div style="width:100%">
+
+	 商品名称：<input type="text" name="fname" id="fname" />
+	  商品原价格：<input type="number" name="normprice" id="normprice" /> 
+	  商品特价格：<input type="number" name="realprice" id="realprice" /> 
+	  商品图片：<input type="file" name="fphoto" id="fphoto" multiple="multiple"  onchange="previewMultipleImage(this,'showpic')" />
+
+	<input type="button" value="添加" onclick="addGoods()" />
+
+	
+
+	<div id="showpic" style="width: 100%">
+	
+		
+	</div>
+	<p style="clear: both;">商品描述：</p>
+
+	<div>
+		<script id="editor" type="text/plain"
+			style="width: 98%; height: 400px;"></script>
+	</div>
+
+	<script type="text/javascript">
+		var ue = UE.getEditor('editor');
+	
+		function addGoods() {
+			var fname = $.trim($("#fname").val());
+			var normprice = $.trim($("#normprice").val());
+			var realprice = $.trim($("#realprice").val());
+			var detail = ue.getContent();
+			
+			data = {
+				
+				fname : fname,
+				normprice : normprice,
+				realprice:realprice,
+				detail : detail
+			};
+
+			$.ajaxFileUpload({
+				url : "../foodsServlet?op=addFoods",
+				secureuri : false,
+				fileElementId : "fphoto",
+				data : data,
+				dataType : "json",
+				success : function(data, status) {
+					data = $.trim(data);
+					if (data == "0") {
+						alert("商品信息添加失败...");
+					} else {
+						$("#fname").val("");
+						$("#normprice").val("");
+						$("#realprice").val("");
+						$("#fphoto").val("");
+						$("#showpic").html("");
+						ue.setContent("");
+
+						alert("商品信息添加成功...");
+						
+					}
+				},
+				/* error : function(data, statue, e) {
+					alert(e);
+				} */
+			});
+		}
+	</script>
+</div>
+

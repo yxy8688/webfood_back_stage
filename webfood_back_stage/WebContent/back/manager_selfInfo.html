@@ -1,0 +1,110 @@
+ <table id="show_personal_info" data-options="fit:true">
+ 	 
+ 	</table>
+ 
+ 
+ <script type="text/javascript">
+ 	var datagridObj;
+ 	var editRow=undefined;//当前正在编辑的行的索引
+ 	var op;
+ 	var flag;
+ 	datagridObj=$('#show_personal_info').datagrid({   
+	    url:'../managerinfoServlet',
+	    fitColumns:true,
+	    loadMsg:'数据加载中...',
+	    queryParams: {op:'personalInfoByPage'},
+	    pagination : true,//显示分页栏
+		striped : true,//斑马线效果
+		nowrap : true,//超出宽带自动截取
+		rownumbers : true,//显示行数
+		pageSize : 5,//每页显示的条数
+		pageList : [ 5, 10, 15, 20, 25, 30 ],
+		sortName : 'adminid',//排序的列
+		remoteSort : false,//前段排序而非服务器端的排序
+
+	    columns:[[ 
+	       {field:'amdinids',title:'全选',width:100,align:'center',checkbox:true},
+	        {field:'adminid',title:'管理员编号',width:100,align:'center',sortable:true}, 
+	        {field:'adminname',title:'管理员名称',width:200,align:'center'}, 
+	        {field:'adminpwd',title:'管理员密码',width:200,align:'center',editor:{type:"text",options:{required:true}}} 
+	    ]],
+	    toolbar: [{
+			iconCls: 'icon-edit',
+			text:"修改",
+			handler: function(){ 
+				 op="updatePersonalInfo";
+				 flag="修改";
+				 //获取用户选中的要修改的行
+				 var rows=datagridObj.datagrid('getChecked')[0];
+				 if(rows==undefined){//说明用户没有选中任何一行
+					 $.messager.show({
+						title:'温馨提示',
+						msg:'请选中您要修改的数据....',
+						timeout:2000,
+						showType:'slide'
+						});
+				 }else{
+					 if(editRow!=undefined){//说明有行正在被编辑
+						 datagridObj.datagrid("rejectChanges");
+						 datagridObj.datagrid("endEdit",editRow);
+					 }
+					 //开启被选中这一行的编辑
+					 var index=datagridObj.datagrid("getRowIndex",rows);
+					 datagridObj.datagrid("updateRow",{index:index,row:rows});
+					 datagridObj.datagrid("beginEdit",index);
+					 editRow=index;//记录当前正在被更该的行的索引
+					 
+				 }
+				}
+		},'-',{
+			iconCls: 'icon-save',
+			text:"保存",
+			handler: function(){ 
+				datagridObj.datagrid("endEdit",editRow);//结束编辑
+				//获取要编辑的数据
+				var rows=datagridObj.datagrid("getChanges")[0];
+				
+				//发送请求到数据库更新
+				if(rows==undefined){
+					datagridObj.datagrid("rejectChanges");
+					datagridObj.datagrid("unselectAll");//取消所有的选中
+					editRow=undefined;
+				}else{
+					rows["op"]=op;
+					$.post("../managerinfoServlet",rows,function(data){
+						data=$.trim(data);
+						if(data=="1"){
+							$.messager.show({
+								title:flag+'提示',
+							msg:flag+'密码修改成功....',
+							timeout:2000,
+							showType:'slide'
+							});
+							datagridObj.datagrid("rejectChanges");
+							datagridObj.datagrid("unselectAll");
+							editRow=undefined;
+							rows==undefined;
+							//重新加载数据
+							datagridObj.datagrid("reload");
+						}else{
+							$.messager.alert('失败提示',flag+'密码修改失败！','error');
+						}
+					});
+				}
+				}
+		
+		},'-',{
+			iconCls: 'icon-undo',
+			text:"撤销",
+			handler: function(){ 
+				 datagridObj.datagrid("rejectChanges");
+				 datagridObj.datagrid("endEdit",editRow);
+				 datagridObj.datagrid("unselectAll");
+				 editRow=undefined;
+				}
+		
+		}]
+	     
+	});  
+	
+	</script>

@@ -1,0 +1,104 @@
+
+
+<div style="padding: 5px;">
+	<fieldset>
+		<div>
+			<div style="margin: 0 1px">
+				<div id="user_total"
+					style="min-width: 368px; height: 368px; margin: 0 auto"></div>
+			</div>
+		</div>
+	</fieldset>
+</div>
+
+<script  type="text/javascript">
+
+/*获取json数据开始*/
+//定义变量
+var userAll;
+var jsonXData = [];
+var jsonyD1 = [];
+var jsonyD2 = [];
+$(function (){
+	
+	//获取数据
+	$.ajax({ 
+		url:"../user_totalServlet",
+		type:"POST",
+		dataType:"JSON",
+		cache: false,
+		async: false,
+		success: function (data) {
+			userAll=data.obj;
+			for(var i=0;i<userAll.length;i++){
+
+				var Userid ="用户："+ userAll[i].userid;
+				var Sum = userAll[i].sum;
+				var order=userAll[i].order;
+				jsonXData.push(Userid); //赋值
+				jsonyD1.push(Sum);
+				jsonyD2.push(order);
+				
+			}
+
+
+			var chart;
+			chart = new Highcharts.Chart({
+				chart: {
+					renderTo: 'user_total',//放置图表的容器
+					plotBackgroundColor: null,
+					plotBorderWidth: null,
+					defaultSeriesType: 'column'   //图表类型line, spline, area, areaspline, column, bar, pie , scatter 
+				},
+				title: {
+					text: '用户消费统计表',
+					style: { font: 'normal 13px 宋体' }
+				},
+				xAxis: {//X轴数据
+					categories: jsonXData,
+					lineWidth: 2,
+					labels: {
+						rotation: 0, //字体倾斜
+						align: 'right',
+						style: { font: 'normal 13px 宋体' }
+					}
+				},
+				yAxis: {//Y轴显示文字
+					lineWidth: 2,
+					title: {
+						text: '数量'
+					}
+				},
+				tooltip: {
+					formatter: function () {
+						return '<b>' + this.x + '</b><br/>' +
+						this.series.name + ': ' + this.y;
+					}
+				},
+				plotOptions: {
+					column: {
+						dataLabels: {
+							enabled: true
+						},
+						enableMouseTracking: true//是否显示title
+					}
+				},
+				series: [{
+					name: '消费额度(单位：元)',
+					data: jsonyD1
+					
+				},{
+					name: '下单数（单位：张）',
+					data: jsonyD2
+					
+				}]
+			});
+			//$("tspan:last").hide(); //把广告删除掉
+		} //if
+
+	});
+
+});
+
+
+</script>

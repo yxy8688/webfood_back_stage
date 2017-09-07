@@ -1,0 +1,307 @@
+<table id="show_foods_info" data-options="fit:true"></table>
+
+<div id="foods_manager_search" style="height: 30px;">
+	<a href="javascript:addfoodsInfo()" class="easyui-linkbutton"
+		data-options="iconCls:'icon-add',plain:true" style="float: left">添加</a>
+	<div class="datagrid-btn-separator"></div>
+	<!-- 分隔符 -->
+	<a href="javascript:updatefoodsInfo()" class="easyui-linkbutton"
+		data-options="iconCls:'icon-edit',plain:true" style="float: left">修改</a>
+	<div class="datagrid-btn-separator"></div>
+	<!-- 分隔符 -->
+	<a href="javascript:deletefoodsInfo()" class="easyui-linkbutton"
+		data-options="iconCls:'icon-remove',plain:true" style="float: left">删除</a>
+	<div class="datagrid-btn-separator"></div>
+	<!-- 分隔符 -->
+	<label>商品名称</label> <input type="text" name="fname" id="search_fname" />
+	<a id="btn" href="javascript:foods_search()" class="easyui-linkbutton"
+		data-options="iconCls:'icon-search'">查询</a>
+
+</div>
+<!-- 添加 -->
+<div id="show_foods_add_info" class="easyui-dialog"
+	data-options="iconCls:'icon-add',resizable:true,modal:true,fit:true,closed:true">
+
+		商品名称：<input type="text" name="fname" id="fname" /> 
+		商品原价格：<input type="number" name="normprice" id="normprice" /> 
+		商品特价格：<input type="number" name="realprice" id="realprice" /> 
+		商品图片：<input type="file" name="fphoto" id="fphoto" multiple="multiple"
+		onchange="previewMultipleImage(this,'showpic')" /> 
+		<input type="button" value="添加" onclick="addFoods()" />
+
+	<div id="showpic" style="width: 100%"></div>
+	<p style="clear: both;">商品描述：</p>
+
+	<div>
+		<script id="editor" type="text/plain"
+			style="width: 98%; height: 400px;"></script>
+	</div>
+</div>
+
+<!-- 修改 -->
+<div id="show_foods_update_info" class="easyui-dialog"
+	data-options="iconCls:'icon-edit',resizable:true,modal:true,fit:true,closed:true">
+	商品编号：<input type="text" name="update_fid" id="update_fid" /> 
+	商品名称：<input  type="text" name="update_fname" id="update_fname" /> 
+	商品原价格：<input type="number" name="update_normprice" id="update_normprice" /> 
+	商品特价格：<input type="number" name="update_realprice" id="update_realprice" /> 
+	商品图片：<input type="file" name="update_fphoto" id="update_fphoto" multiple="multiple"
+		onchange="previewMultipleImage(this,'update_showpic')" /> 
+	<input type="button" value="确定修改" onclick="updateFoods()" />
+
+	<div id="update_showpic" style="width: 100%"></div>
+	<p style="clear: both;">商品描述：</p>
+	
+	<textarea id="update_detail" style="width: 400px; height: 200px;">
+		
+	</textarea>
+</div>
+
+
+<script type="text/javascript">
+	var datagridObj;
+	datagridObj=$('#show_foods_info').datagrid({
+						url : '../foodsServlet',
+						fitColumns : true,
+						loadMsg : '数据加载中..',
+
+						queryParams : {
+							op : 'findfoodsInfoByPage'
+						},
+						pagination : true,//显示分页栏
+						striped : true,//斑马线效果
+						nowrap : true,//超出宽带自动截取
+						rownumbers : true,//显示行数
+						pageSize : 5,//每页显示的条数
+						pageList : [ 5, 10, 15, 20, 25, 30 ],
+						sortName : 'fid',//排序的列
+						remoteSort : false,//前段排序而非服务器端的排序
+
+						columns : [ [
+								{
+									field : 'gids',
+									title : '全选',
+									width : 100,
+									align : 'center',
+									checkbox : true
+								},
+								{
+									field : 'fphoto',
+									title : '商品图片',
+									width : 100,
+									align : 'center',
+									formatter : function(value, row, index) {
+										var picStr = "";
+										if (value.indexOf(",") > 0) {
+											value = value.split(",");
+											for (var i = 0; i < value.length; i++) {
+												picStr += "<img src='../"+value[i]+"'width='100px' height='100px'/>"
+											}
+										} else if (value != "") {
+											picStr += "<img src='../../pics/"+value+"'width='100px' height='100px'/>"
+										} else {
+											picStr += "<img src='../image/zanwu.jpg' width='100px' height='100px'>"
+										}
+										return picStr;
+
+									}
+								}, {
+									field : 'fid',
+									title : '商品编号',
+									width : 100,
+									align : 'center',
+									sortable : true
+								}, {
+									field : 'fname',
+									title : '商品名称',
+									width : 100,
+									align : 'center'
+								}, {
+									field : 'normprice',
+									title : '商品原价格',
+									width : 100,
+									align : 'center'
+								}, {
+									field : 'realprice',
+									title : '商品特价格',
+									width : 100,
+									align : 'center'
+								},
+
+								{
+									field : 'detail',
+									title : '商品描述',
+									width : 100,
+									align : 'center'
+								},
+
+								{
+									field : 'num',
+									title : '销量',
+									width : 100,
+									align : 'center',
+									sortable : true
+								}
+
+						] ],
+						toolbar : "#foods_manager_search"
+
+					});
+
+	//配置重于代码，约定重于配置
+
+	function addfoodsInfo() {
+		$("#show_foods_add_info").dialog({
+			title : '添加商品信息',
+			closed : false,
+			iconCls : 'icon-add'
+		});
+	}
+	
+	var picpath;
+	function updatefoodsInfo() {
+		var rows = $('#show_foods_info').datagrid("getChecked");
+		if (rows.length > 1 || rows.length <= 0) {
+			$.messager.alert("温馨提示", "请选中一行数据进行修改...", "error");
+		} else {
+			rows = rows[0];
+			$("#show_foods_update_info").dialog({
+				title : '修改商品信息',
+				closed : false,
+				iconCls : 'icon-edit'
+			});
+			$("#update_fid").val(rows.fid);
+			$("#update_fname").val(rows.fname);
+			$("#update_normprice").val(rows.normprice);
+			$("#update_realprice").val(rows.realprice);
+			$("#update_detail").val(rows.detail);
+			$("#update_showpic").append("<img src='../../pics/"+rows.fphoto+"'width='100px' height='100px'/>");
+			picpath=rows.fphoto;
+			
+		}
+	}
+	function deletefoodsInfo() {
+		var rows = $("#show_foods_info").datagrid("getChecked");
+		if (rows.length > 1 || rows.length <= 0) {
+			$.messager.alert("温馨提示", "请选中一行数据进行删除...", "error");
+		} else {
+			rows = rows[0];
+			alert(rows.fid);
+			$.ajaxFileUpload({
+				url : "../foodsServlet?op=deleteFoods&fid="+rows.fid,
+				
+				dataType : "json",
+				success : function(data, status) {
+					data = $.trim(data);
+					if (data == "0") {
+						alert("商品删除失败...");
+					} else {
+						alert("商品删除成功...");
+					}
+				},
+				error : function(data, statue, e) {
+					alert(e);
+				}
+			});
+		}
+		//重新加载数据
+		datagridObj.datagrid("reload");
+	}
+
+	function foods_search() {
+	
+		var fname = $.trim($("#search_fname").val());
+
+		$('#show_foods_info').datagrid({
+			url : '../foodsServlet',
+			queryParams : {
+				op : 'foodsInfoSearch',
+				
+				fname : fname
+			}
+		});
+	}
+
+	var ue = UE.getEditor('editor');
+
+	function addFoods() {
+		var fname = $.trim($("#fname").val());
+		var normprice = $.trim($("#normprice").val());
+		var realprice = $.trim($("#realprice").val());
+		var detail = ue.getContent();
+		data = {
+			fname : fname,
+			normprice : normprice,
+			realprice : realprice,
+			detail : detail
+		};
+		$.ajaxFileUpload({
+			url : "../foodsServlet?op=addFoods",
+			secureuri : false,
+			fileElementId : "fphoto",
+			data : data,
+			dataType : "json",
+			success : function(data, status) {
+				data = $.trim(data);
+				if (data == "0") {
+					alert("商品信息添加失败...");
+				} else {
+					$("#fname").val("");
+					$("#normprice").val("");
+					$("#realprice").val("");
+					$("#fphoto").val("");
+					$("#showpic").html("");
+					ue.setContent("");
+					alert("商品信息添加成功...");
+				}
+			},
+			error : function(data, statue, e) {
+				alert(e);
+			}
+		});
+		//重新加载数据
+		datagridObj.datagrid("reload");
+	}
+
+	function updateFoods() {
+		var fid = $.trim($("#update_fid").val());
+		var fname = $.trim($("#update_fname").val());
+		var normprice = $.trim($("#update_normprice").val());
+		var realprice = $.trim($("#update_realprice").val());
+		var detail = $.trim($("#update_detail").val());
+		
+		data = {
+			fid : fid,
+			fname : fname,
+			normprice : normprice,
+			realprice : realprice,
+			detail : detail
+		};
+		$.ajaxFileUpload({
+			url : "../foodsServlet?op=updateFoods",
+			secureuri : false,
+			fileElementId : "update_fphoto",
+			data : data,
+			dataType : "json",
+			success : function(data, status) {
+				data = $.trim(data);
+				if (data == "0") {
+					alert("商品信息修改失败...");
+				} else {
+					$("#update_fid").val("");
+					$("#update_fname").val("");
+					$("#update_normprice").val("");
+					$("#update_realprice").val("");
+					$("#update_fphoto").val("");
+					$("#update_showpic").html("");
+					$("#update_detail").val("");
+					alert("商品信息修改成功...");
+					//$('#show_foods_info').datagrid("reflush");
+				}
+			},
+			error : function(data, statue, e) {
+				alert(e);
+			}
+		});
+	}
+</script>

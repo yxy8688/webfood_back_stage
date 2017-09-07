@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	id="WebApp_ID" version="3.0">
+	<display-name>webfood_back_stage</display-name>
+	<filter>
+		<filter-name>CharacterEncodingFilter</filter-name>
+		<filter-class>com.yc.foods.filters.CharacterEncoding</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>utf-8</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>CharacterEncodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter>
+		<filter-name>LoginFilter</filter-name>
+		<filter-class>com.yc.foods.filters.LoginFilter</filter-class>
+		<init-param>
+			<param-name>errorPage</param-name>
+			<param-value>login.html</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>LoginFilter</filter-name>
+		<url-pattern>/back/*</url-pattern>
+	</filter-mapping>
+	<servlet>
+		<servlet-name>FoodsServlet</servlet-name>
+		<servlet-class>com.yc.food.servlet.FoodsServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>LoginServlet</servlet-name>
+		<servlet-class>com.yc.food.servlet.LoginServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>ManagerInfoServlet</servlet-name>
+		<servlet-class>com.yc.food.servlet.ManagerInfoServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>UserInfoServlet</servlet-name>
+		<servlet-class>com.yc.food.servlet.UserInfoServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>ManagerOrderServlet</servlet-name>
+		<servlet-class>com.yc.food.servlet.Manager_orderServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>Order_detailedServlet</servlet-name>
+		<servlet-class>com.yc.food.servlet.Order_detailedServlet</servlet-class>
+	</servlet>
+
+
+
+	<servlet>
+
+		<servlet-name>active_managerServlet</servlet-name>
+		<servlet-class>com.yc.food.servlet.Active_managerServlet</servlet-class>
+
+	</servlet>
+
+	<servlet>
+		<servlet-name>food_totalServlet</servlet-name>
+		<servlet-class>com.yc.highChart.food_totalServlet</servlet-class>
+	</servlet>
+	
+	<servlet>
+		<servlet-name>user_totalServlet</servlet-name>
+		<servlet-class>com.yc.highChart.user_totalServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>user_totalServlet</servlet-name>
+		<url-pattern>/user_totalServlet</url-pattern>
+	</servlet-mapping>
+	
+	
+	<servlet-mapping>
+		<servlet-name>food_totalServlet</servlet-name>
+		<url-pattern>/food_totalServlet</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>active_managerServlet</servlet-name>
+		<url-pattern>/active_managerServlet</url-pattern>
+	</servlet-mapping>
+
+
+
+
+
+	<servlet-mapping>
+		<servlet-name>Order_detailedServlet</servlet-name>
+		<url-pattern>/order_detailedServlet</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>ManagerOrderServlet</servlet-name>
+		<url-pattern>/managetOrderServlet</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>UserInfoServlet</servlet-name>
+		<url-pattern>/userinfoServlet</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>ManagerInfoServlet</servlet-name>
+		<url-pattern>/managerinfoServlet</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>LoginServlet</servlet-name>
+		<url-pattern>/loginServlet</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>FoodsServlet</servlet-name>
+		<url-pattern>/foodsServlet</url-pattern>
+	</servlet-mapping>
+</web-app>

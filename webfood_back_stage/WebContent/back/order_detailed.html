@@ -1,0 +1,40 @@
+
+<table id="show_order_detailed" data-options="fit:true">
+
+</table>
+
+
+<script type="text/javascript">
+ 	var datagridObj;
+ 	var editRow=undefined;//当前正在编辑的行的索引
+ 	var op;
+ 	var flag;
+ 	datagridObj=$('#show_order_detailed').datagrid({   
+	    url:'../order_detailedServlet',
+	    fitColumns:true,
+	    loadMsg:'数据加载中...',
+	    queryParams: {op:'showOrderInfoByPage'},
+	    pagination : true,//显示分页栏
+		striped : true,//斑马线效果
+		nowrap : true,//超出宽带自动截取
+		rownumbers : true,//显示行数
+		pageSize : 5,//每页显示的条数
+		pageList : [ 5, 10, 15, 20, 25, 30 ],
+		sortName : 'roiid',//排序的列
+		remoteSort : false,//前段排序而非服务器端的排序
+
+	    columns:[[ 
+	    /*    {field:'roiids',title:'全选',width:100,align:'center',checkbox:true}, */
+	       {field:'roiid',title:'详情表ID',width:100,align:'center',sortable:true}, 
+	        {field:'userid',title:'用户ID',width:100,align:'center'}, 
+	        {field:'roid',title:'订单编号',width:200,align:'center'}, 
+	        {field:'fid',title:'食品编号',width:200,align:'center'},
+	        {field:'fname',title:'食品名称',width:100,align:'center'}, 
+	        {field:'dealprice',title:'成交价',width:200,align:'center'},
+	        {field:'num',title:'数量',width:100,align:'center'}
+	       ]]
+	  
+	     
+	});  
+	
+	</script>
